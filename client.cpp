@@ -55,7 +55,6 @@ std::string send_message(std::string message, std::string hostname, int port)
 
 int main(int argc, char *argv[])
 {
-
     if(argc < 4) {
         std::cout << "client HOSTNAME PORT MESSAGE\n";
         exit(0);

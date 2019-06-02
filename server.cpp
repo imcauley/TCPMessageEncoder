@@ -79,40 +79,37 @@ std::vector<std::string> split_message(std::string message)
 
 int encode_word(std::string word)
 {
+    if(word_mapping.count(word) > 0) {
+        return word_mapping[word];
+    }
+
+    int code;
+
     if (CODE_TYPE == SEQ) {
-        if(word_mapping.count(word) > 0) {
-            return word_mapping[word];
-        }
-        else {
-            std::pair<std::string, int> element (word, current);
-            std::pair<int, std::string> reverse(current, word);
-            word_mapping.insert(element);
-            reverse_mapping.insert(reverse);
-            current++;
-            return word_mapping[word];
-        }
+        code = current;
+        current++;
     }
     else if (CODE_TYPE == SUM) {
         int sum = 0;
         for(int i = 0; i < word.length(); i++) {
             sum += (int) word[i];
         }
-        return sum;
+        code = sum;
     }
     else {
         exit(0);
     }
+
+    std::pair<std::string, int> element (word, code);
+    std::pair<int, std::string> reverse(code, word);
+    word_mapping.insert(element);
+    reverse_mapping.insert(reverse);
+    return word_mapping[word];
 }
 
 
-std::string decode_word(int code) {
+std::string decode_word(std::string code) {
 
-    if(CODE_TYPE == SEQ) {
-        return reverse_mapping[code];
-    }
-    else if(CODE_TYPE == SUM) {
-        return std::string("test");
-    }
 }
 
 std::string process_message(std::string message)
@@ -137,9 +134,14 @@ std::string process_message(std::string message)
     }
     else {
         for(int i = 0; i < words.size(); i++) {
-            int en = std::stoi(words[i].erase(0,2));
-            response.append(decode_word(en));
-            response.append(" ");
+            int en = std::stoi(words[i].erase(0,2), nullptr, 16);
+            if(reverse_mapping.count(en) > 0) {
+                response.append(reverse_mapping[en]);
+                response.append(" ");
+            } 
+            else {
+                return std::string("Decoding error, unrecognized code");
+            }
         }
     }
 

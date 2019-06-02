@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string.h>
 #include <pthread.h>
+#include <sstream>
 
 #include <unordered_map>
 #include <vector>
@@ -38,36 +39,15 @@ bool is_character(char c)
     return false;
 }
 
-std::string get_entire_response(int sockfd)
-{
-    std::string page;
-    int BUFFER_SIZE = 256;
-    char buffer[BUFFER_SIZE];
-    bool keep_reading = true;
-    int n;
-
-    while(keep_reading)
-    {
-        std::fill_n(buffer, BUFFER_SIZE, '\0');
-        n = recv(sockfd, buffer, BUFFER_SIZE, 0);
-
-        if(n <= 0)
-        {
-            keep_reading = false;
-        }
-        
-        page.append(buffer);
-    }
-    return page;
-}
-
 std::string encoding_to_string(std::vector<int> encodings) 
 {
     std::string message;
     for(int i = 0; i < encodings.size(); i++) {
-        message.append(std::string("0x"));
-        message.append(std::to_string(encodings[i]));
+        std::stringstream oss;
+        oss << "0x" << std::hex << encodings[i];
+        message.append(oss.str());
         message.append(std::string(" "));
+        oss.str("");
     }
     return message;
 }

@@ -17,31 +17,6 @@ void error(const char *msg)
     exit(0);
 }
 
-std::string get_entire_response(int sockfd)
-{
-    std::string page;
-    int BUFFER_SIZE = 256;
-    char buffer[BUFFER_SIZE];
-    bool keep_reading = true;
-    int n;
-
-    while(keep_reading)
-    {
-        std::fill_n(buffer, BUFFER_SIZE, '\0');
-        n = recv(sockfd, buffer, BUFFER_SIZE, 0);
-
-        if(n <= 0)
-        {
-            keep_reading = false;
-        }
-        
-        page.append(buffer);
-    }
-    close(sockfd);
-
-    return page;
-}
-
 std::string send_message(std::string message, std::string hostname, int port)
 {
     int sockfd, portno, n;
@@ -73,6 +48,7 @@ std::string send_message(std::string message, std::string hostname, int port)
         error("ERROR writing to socket");
 
     char buffer[2048];
+    std::fill_n(buffer, 2048, '\0');
     n = recv(sockfd, buffer, 2047, 0);
     return std::string(buffer);
 }
@@ -93,7 +69,8 @@ int main(int argc, char *argv[])
         message.pop_back();
     }
     int port = atoi(argv[2]);
-    std::cout << send_message(message, argv[1], port) << "\n";
+
+    std::cout << send_message(message, argv[1], port).c_str() << "\n";
 
 
     return 0;

@@ -49,7 +49,7 @@ std::string send_message(std::string message, std::string hostname, int port)
     struct hostent *server;
     int bytes_read;
 
-    portno = 8081;
+    portno = port;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
         error("ERROR opening socket");
